@@ -7,8 +7,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.db import Base
 from app.models import CharityProject
+from app.schemas.charityproject import CharityProjectCreate, CharityProjectUpdate
+
 
 class CRUDCharityproject():
+    async def get(
+            self,
+            project_id: int,
+            session: AsyncSession
+    ) -> CharityProject:
+        db_objs = await session.execute(
+            select(CharityProject).where(CharityProject.id == project_id))
+        return db_objs.scalars().first()
+
     async def get_multi(
             self,
             session: AsyncSession
@@ -22,7 +33,7 @@ class CRUDCharityproject():
             session: AsyncSession,
     ) -> CharityProject:
         obj_in_data = obj_in.dict()
-        db_obj = self.model(**obj_in_data)
+        db_obj = CharityProject(**obj_in_data)
         session.add(db_obj)
         await session.commit()
         await session.refresh(db_obj)
@@ -30,13 +41,12 @@ class CRUDCharityproject():
 
     async def update(
             self,
-            session: AsyncSession,
             db_obj: CharityProject,
             obj_in: CharityProjectUpdate,
+            session: AsyncSession
     ) -> CharityProject:
         obj_data = jsonable_encoder(db_obj)
         update_data = obj_in.dict(exclude_unset=True)
-
         for field in obj_data:
             if field in update_data:
                 setattr(db_obj, field, update_data[field])
@@ -47,10 +57,12 @@ class CRUDCharityproject():
 
     async def remove(
             self,
-            session: AsyncSession,
             db_obj: CharityProjectCreate,
+            session: AsyncSession
     ) -> CharityProjectCreate:
         await session.delete(db_obj)
         await session.commit()
         return db_obj
 
+
+charity_project_crud = CRUDCharityproject()

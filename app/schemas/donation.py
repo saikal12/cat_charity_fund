@@ -1,25 +1,29 @@
-from datetime import datetime, timedelta
-
-from pydantic import BaseModel, validator, root_validator, Field
-from pydantic import Extra
+from datetime import datetime
 from typing import Optional
+
+from pydantic import BaseModel, Field
 
 
 class DonationBase(BaseModel):
-    full_amount: int = Field(..., gt=0)
-    comment: str
+    full_amount: int = Field(gt=0)
+    comment: Optional[str]
 
 
-class DonationDB(DonationBase):
+class DonationCreate(DonationBase):
+    pass
+
+
+class DonationCreateResponse(DonationBase):
+    id: int
+    create_date: datetime
+
+    class Config:
+        orm_mode = True
+
+
+class DonationDB(DonationCreate):
     user_id: int
-    invested_amount:int = Field(..., default=0)
-    fully_invested: bool = Field(False)
-    create_date: datetime = Field(default=datetime.utcnow)
+    invested_amount: int
+    fully_invested: bool
     close_date: datetime
-
-
-class DonationUser(DonationBase):
-    user_id: int
-    create_date: datetime = Field(default=datetime.utcnow)
-
 

@@ -1,32 +1,35 @@
 from datetime import datetime
 
-from pydantic import BaseModel, validator, root_validator, Field
+from pydantic import BaseModel, validator, root_validator, Field, PositiveInt
 from pydantic import Extra
 from typing import Optional
 
 
-class CharityProjectsBase(BaseModel):
-    name: Optional[str] = Field(le=100)
+class CharityProjectBase(BaseModel):
+    name: Optional[str] = Field(min_length=1, max_length=100)
     description: Optional[str]
-    full_amount: Optional[str] = Field(0, gt=0)
+    full_amount: Optional[int] = Field(gt=0)
+
+    class Config:
+        extra = Extra.forbid
 
 
-class CharityProjectsCreate(CharityProjectsBase):
-    name: str = Field(..., le=100)
+class CharityProjectCreate(CharityProjectBase):
+    name: str = Field(..., min_length=1, max_length=100)
     description: str = Field(...)
-    full_amount: str = Field(0, gt=0)
+    full_amount: int = Field(gt=0)
 
 
-class CharityProjectsUpdate(CharityProjectsBase):
+class CharityProjectUpdate(CharityProjectBase):
     pass
 
 
-class CharityProjectsDB(BaseModel):
-    name: str = Field(..., le=100)
-    description: str = Field(...)
-    full_amount: str = Field(0, gt=0)
-    id: int = Field(...)
-    invested_amount: int = Field(...)
-    fully_invested: bool = Field(True)
-    create_date: datetime = Field(..., )
-    close_date: datetime
+class CharityProjectDB(CharityProjectCreate):
+    id: int
+    invested_amount: int
+    fully_invested: bool
+    create_date: datetime
+    close_date: Optional[datetime]
+
+    class Config:
+        orm_mode = True

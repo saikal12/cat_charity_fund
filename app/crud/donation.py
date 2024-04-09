@@ -4,11 +4,13 @@ from typing import Generic, List, Optional, Type, TypeVar
 
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.schemas.donation import DonationCreate
 
 from app.core.db import Base
-from app.models import Donation
+from app.models import Donation, User
 
-class CRUDCharityproject():
+
+class DonationCRUD():
     async def get_multi(
             self,
             session: AsyncSession
@@ -20,9 +22,11 @@ class CRUDCharityproject():
             self,
             obj_in: DonationCreate,
             session: AsyncSession,
+            user: User
     ) -> Donation:
         obj_in_data = obj_in.dict()
-        db_obj = self.model(**obj_in_data)
+        obj_in_data['user_id'] = user.id
+        db_obj = Donation(**obj_in_data)
         session.add(db_obj)
         await session.commit()
         await session.refresh(db_obj)
@@ -35,4 +39,4 @@ class CRUDCharityproject():
         return user_donation.scalars().all()
 
 
-
+donation_crud = DonationCRUD()

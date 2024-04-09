@@ -1,10 +1,11 @@
 from datetime import datetime
 
-from cat_charity_fund.app.core.db import Base
+from app.core.db import Base
 from sqlalchemy import Column,Integer, Boolean, DateTime
 
 
-class BaseModel(Base):
+class BaseModel:
+
     full_amount = Column(Integer, nullable=False)
     invested_amount = Column(Integer, default=0)
     fully_invested = Column(Boolean, default=False)
