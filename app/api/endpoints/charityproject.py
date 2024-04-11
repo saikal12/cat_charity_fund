@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.user import current_superuser
 from app.schemas.charityproject import CharityProjectDB, CharityProjectCreate, CharityProjectUpdate
 from app.crud.charityproject import charity_project_crud
+from app.services.investing import donation_investing
 
 router = APIRouter()
 
@@ -26,8 +27,9 @@ async def create_project(
         project: CharityProjectCreate,
         session: AsyncSession = Depends(get_async_session)):
     """Только для суперюзеров."""
+    await check_name_duplicate(project.name, session)
     project = await charity_project_crud.create(project, session)
-    return project
+    return await donation_investing(project, session)
 
 
 @router.delete('/{project_id}',
@@ -55,7 +57,7 @@ async def update_project(
     """Только для суперюзеров."""
 
     project = await check_project_exists(project_id, session)
-    project = await check_project_closed(project.fully_invested)
+    await check_project_closed(project.fully_invested)
     if obj_in.name is not None:
         await check_name_duplicate(obj_in.name, session)
     if obj_in.full_amount is not None:

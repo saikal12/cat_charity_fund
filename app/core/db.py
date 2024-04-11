@@ -3,7 +3,6 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, sessionmaker, declared_attr
 
 from app.core.config import settings
-from app.models import Donation
 
 
 class PreBase:
@@ -25,8 +24,3 @@ async def get_async_session():
     async with AsyncSessionLocal() as async_session:
         yield async_session
 
-
-async def clear_table():
-    async with AsyncSessionLocal() as session:
-        async with session.begin():
-            await session.execute(Donation.__table__.delete())

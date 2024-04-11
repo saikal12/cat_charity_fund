@@ -5,6 +5,7 @@ from app.core.user import current_user, current_superuser
 from app.models import User
 from app.schemas.donation import DonationDB, DonationCreate, DonationCreateResponse
 from app.crud.donation import donation_crud
+from app.services.investing import donation_investing
 
 router = APIRouter()
 
@@ -33,4 +34,4 @@ async def create_donation(
         user: User = Depends(current_user)
 ):
     donation = await donation_crud.create(donation, session, user)
-    return donation
+    return await donation_investing(donation, session)

@@ -10,16 +10,19 @@ async def check_name_duplicate(
         project_name: str,
         session: AsyncSession,
 ) -> None:
-    project_id = await session.execute(
-            select(Donation.id).where(
-                Donation.name == project_name
+    project = await session.execute(
+            select(CharityProject.id).where(
+                CharityProject.name == project_name
             )
         )
-    if project_id is not None:
+    existing_project = project.scalar()
+
+    if existing_project is not None:
         raise HTTPException(
             status_code=400,
-            detail='Проект с таким именем уже существует!"',
+            detail='Проект с таким именем уже существует!',
         )
+
 
 
 async def check_project_exists(
