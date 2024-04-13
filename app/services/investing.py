@@ -18,7 +18,7 @@ async def donation_investing(
 
     obj_db = CharityProject if isinstance(obj_in, Donation) else Donation
     early_obj = await session.execute(select(obj_db).where(
-        obj_db.fully_invested is False
+        obj_db.fully_invested == 0
     ).order_by(obj_db.create_date.desc(), obj_db.id.desc())
     )
 
