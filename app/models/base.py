@@ -1,7 +1,6 @@
 from datetime import datetime
 
-from app.core.db import Base
-from sqlalchemy import Column,Integer, Boolean, DateTime
+from sqlalchemy import Boolean, Column, DateTime, Integer
 
 
 class BaseModel:

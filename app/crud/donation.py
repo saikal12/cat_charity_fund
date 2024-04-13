@@ -1,13 +1,10 @@
-from fastapi.encoders import jsonable_encoder
+from typing import List
+
 from sqlalchemy import select
-from typing import Generic, List, Optional, Type, TypeVar
-
-from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.schemas.donation import DonationCreate
 
-from app.core.db import Base
 from app.models import Donation, User
+from app.schemas.donation import DonationCreate
 
 
 class DonationCRUD():

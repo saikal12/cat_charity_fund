@@ -1,9 +1,9 @@
-from sqlalchemy import select
-
 from fastapi import HTTPException
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.crud.charityproject import charity_project_crud
-from app.models import Donation, CharityProject
+
+from app.crud.charity_project import charity_project_crud
+from app.models import CharityProject
 
 
 async def check_name_duplicate(
@@ -11,10 +11,10 @@ async def check_name_duplicate(
         session: AsyncSession,
 ) -> None:
     project = await session.execute(
-            select(CharityProject.id).where(
-                CharityProject.name == project_name
-            )
+        select(CharityProject.id).where(
+            CharityProject.name == project_name
         )
+    )
     existing_project = project.scalar()
 
     if existing_project is not None:
@@ -22,7 +22,6 @@ async def check_name_duplicate(
             status_code=400,
             detail='Проект с таким именем уже существует!',
         )
-
 
 
 async def check_project_exists(
@@ -55,17 +54,18 @@ async def check_full_amount(
     if full_amount < project.invested_amount:
         raise HTTPException(
             status_code=400,
-            detail='Нелья установить значение full_amount меньше уже вложенной суммы.'
+            detail='Нелья установить значение '
+                   'full_amount меньше уже вложенной суммы.'
         )
 
 
 async def check_before_delete(
         project: CharityProject
 ):
-    if project.invested_amount >0:
+    if project.invested_amount > 0:
         raise HTTPException(
             status_code=400,
-            detail='В проект были внесены средства, не подлежит удалению!'
+            detail='В проект были внесены средства, '
+                   'не подлежит удалению!'
         )
     return project
-

@@ -21,9 +21,8 @@ class DonationCreateResponse(DonationBase):
         orm_mode = True
 
 
-class DonationDB(DonationCreate):
+class DonationDB(DonationCreateResponse):
     user_id: int
     invested_amount: int
     fully_invested: bool
-    close_date: datetime
-
+    close_date: Optional[datetime]

@@ -1,15 +1,17 @@
 from fastapi import APIRouter, Depends
-
-from app.api.endpoints.validation import (check_project_exists,
-                                          check_full_amount, check_name_duplicate,
-                                          check_project_closed,
-                                          check_before_delete)
-from app.core.db import get_async_session
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.endpoints.validation import (check_before_delete,
+                                          check_full_amount,
+                                          check_name_duplicate,
+                                          check_project_closed,
+                                          check_project_exists)
+from app.core.db import get_async_session
 from app.core.user import current_superuser
-from app.schemas.charityproject import CharityProjectDB, CharityProjectCreate, CharityProjectUpdate
-from app.crud.charityproject import charity_project_crud
+from app.crud.charity_project import charity_project_crud
+from app.schemas.charity_project import (CharityProjectCreate,
+                                         CharityProjectDB,
+                                         CharityProjectUpdate)
 from app.services.investing import donation_investing
 
 router = APIRouter()
@@ -42,7 +44,7 @@ async def delete_project(
     """Только для суперюзеров."""
     project = await check_project_exists(project_id, session)
     await check_before_delete(project)
-    project = await charity_project_crud.remove(project_id, session)
+    project = await charity_project_crud.remove(project, session)
     return project
 
 
