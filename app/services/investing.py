@@ -13,8 +13,6 @@ def donation_investing(
         target: Union[Donation, CharityProject],
         sources: List[Union[Donation, CharityProject]]
 ) -> Union[Donation, CharityProject]:
-    print(f"Initial target full amount: {target.full_amount}")
-    print(f"Initial target invested amount: {target.invested_amount}")
     while sources and target.full_amount > target.invested_amount:
         source = sources.pop()
         need_investing = source.full_amount - source.invested_amount
