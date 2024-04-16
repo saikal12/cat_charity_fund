@@ -19,14 +19,15 @@ class DonationCRUD():
             self,
             obj_in: DonationCreate,
             session: AsyncSession,
-            user: User
+            user: User,
+            commit: bool = True
     ) -> Donation:
         obj_in_data = obj_in.dict()
-        obj_in_data['user_id'] = user.id
+        if user is not None:
+            obj_in_data['user_id'] = user.id
         db_obj = Donation(**obj_in_data)
         session.add(db_obj)
-        await session.commit()
-        await session.refresh(db_obj)
+        await session.flush()
         return db_obj
 
     async def get_user_donation(self,

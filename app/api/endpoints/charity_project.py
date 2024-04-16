@@ -5,7 +5,8 @@ from app.api.endpoints.validation import (check_before_delete,
                                           check_full_amount,
                                           check_name_duplicate,
                                           check_project_closed,
-                                          check_project_exists)
+                                          check_project_exists,
+                                          get_objs_investing)
 from app.core.db import get_async_session
 from app.core.user import current_superuser
 from app.crud.charity_project import charity_project_crud
@@ -31,7 +32,12 @@ async def create_project(
     """Только для суперюзеров."""
     await check_name_duplicate(project.name, session)
     project = await charity_project_crud.create(project, session)
-    return await donation_investing(project, session)
+    sourses = await get_objs_investing(project, session)
+    commit_changes = donation_investing(project, sourses)
+    session.add(commit_changes)
+    await session.commit()
+    await session.refresh(commit_changes)
+    return commit_changes
 
 
 @router.delete('/{project_id}',

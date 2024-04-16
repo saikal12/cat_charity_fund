@@ -1,9 +1,11 @@
+from typing import Union
+
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.charity_project import charity_project_crud
-from app.models import CharityProject
+from app.models import CharityProject, Donation
 
 
 async def check_name_duplicate(
@@ -69,3 +71,14 @@ async def check_before_delete(
                    'не подлежит удалению!'
         )
     return project
+
+
+async def get_objs_investing(db_obj: Union[CharityProject, Donation],
+                             session: AsyncSession):
+    obj_db = CharityProject if isinstance(db_obj, Donation) else Donation
+    early_objs = await session.execute(select(obj_db).where(
+        obj_db.fully_invested == 0
+    ).order_by(obj_db.create_date.desc(), obj_db.id.desc()))
+
+    sourses = early_objs.scalars().all()
+    return sourses

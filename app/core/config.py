@@ -15,3 +15,6 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+MAX_STRING_NAME = 100
+MIN_STRING_NAME = 1

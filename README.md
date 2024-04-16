@@ -49,6 +49,12 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
+### Выполните миграции:
+```sh
+alembic upgrade head
+```
+
+
 #### Запустите приложение на локальном сервере
 
 ```sh

@@ -1,8 +1,5 @@
 from datetime import datetime
-from typing import Union
-
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import List, Union
 
 from app.models import CharityProject, Donation
 
@@ -12,32 +9,23 @@ def close_invest(obj):
     obj.close_date = datetime.now()
 
 
-async def donation_investing(
-        obj_in: Union[Donation, CharityProject],
-        session: AsyncSession):
-
-    obj_db = CharityProject if isinstance(obj_in, Donation) else Donation
-    early_obj = await session.execute(select(obj_db).where(
-        obj_db.fully_invested == 0
-    ).order_by(obj_db.create_date.desc(), obj_db.id.desc())
-    )
-
-    early_obj = early_obj.scalars().all()
-    while early_obj and obj_in.full_amount > obj_in.invested_amount:
-        investing_obj = early_obj.pop()
-        need_investing = investing_obj.full_amount - investing_obj.invested_amount
-        if obj_in.full_amount > need_investing:
-            obj_in.invested_amount += need_investing
+def donation_investing(
+        target: Union[Donation, CharityProject],
+        sources: List[Union[Donation, CharityProject]]
+) -> Union[Donation, CharityProject]:
+    print(f"Initial target full amount: {target.full_amount}")
+    print(f"Initial target invested amount: {target.invested_amount}")
+    while sources and target.full_amount > target.invested_amount:
+        source = sources.pop()
+        need_investing = source.full_amount - source.invested_amount
+        if target.full_amount > need_investing:
+            target.invested_amount += need_investing
         else:
-            obj_in.invested_amount = obj_in.full_amount
-            close_invest(obj_in)
-            investing_obj.invested_amount += obj_in.full_amount
+            target.invested_amount = target.full_amount
+            close_invest(target)
+            source.invested_amount += target.full_amount
 
-            if investing_obj.invested_amount == investing_obj.full_amount:
-                close_invest(investing_obj)
-        session.add(investing_obj)
+            if source.invested_amount == source.full_amount:
+                close_invest(source)
 
-    session.add(obj_in)
-    await session.commit()
-    await session.refresh(obj_in)
-    return obj_in
+    return target
