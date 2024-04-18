@@ -13,7 +13,7 @@ def donation_investing(
         target: Union[Donation, CharityProject],
         sources: List[Union[Donation, CharityProject]]
 ) -> Union[Donation, CharityProject]:
-    while sources and target.full_amount > target.invested_amount:
+    while sources and (target.invested_amount is None or target.full_amount > target.invested_amount):
         source = sources.pop()
         need_investing = source.full_amount - source.invested_amount
         if target.full_amount > need_investing:

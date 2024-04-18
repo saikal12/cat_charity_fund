@@ -31,7 +31,7 @@ async def create_project(
         session: AsyncSession = Depends(get_async_session)):
     """Только для суперюзеров."""
     await check_name_duplicate(project.name, session)
-    project = await charity_project_crud.create(project, session)
+    project = await charity_project_crud.create(project, session, commit=False)
     sourses = await get_objs_investing(project, session)
     commit_changes = donation_investing(project, sourses)
     session.add(commit_changes)

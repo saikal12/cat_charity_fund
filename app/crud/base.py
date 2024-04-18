@@ -36,11 +36,14 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             self,
             obj_in: CreateSchemaType,
             session: AsyncSession,
+            commit: bool = True
     ) -> ModelType:
         obj_in_data = obj_in.dict()
         db_obj = self.model(**obj_in_data)
         session.add(db_obj)
-        await session.flush()
+        if commit:
+            await session.commit()
+            await session.refresh(db_obj)
         return db_obj
 
     async def update(

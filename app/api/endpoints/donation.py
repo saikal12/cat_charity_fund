@@ -36,7 +36,7 @@ async def create_donation(
         session: AsyncSession = Depends(get_async_session),
         user: User = Depends(current_user)
 ):
-    donation = await donation_crud.create(donation, session, user)
+    donation = await donation_crud.create(donation, session, user, commit=False)
     sourses = await get_objs_investing(donation, session)
     commit_changes = donation_investing(donation, sourses)
     session.add(commit_changes)

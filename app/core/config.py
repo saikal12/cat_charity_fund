@@ -18,3 +18,4 @@ settings = Settings()
 
 MAX_STRING_NAME = 100
 MIN_STRING_NAME = 1
+INITIAL_AMOUNT = 0
