@@ -62,6 +62,5 @@ uvicorn app.main:app --reload
 ```
 
 
-
 ### Автор проекта:
 [Сулайманова Сайкал](https://github.com/saikal12)
