@@ -1,6 +1,7 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from aiogoogle import Aiogoogle
+
 from app.core.config import settings
 
 FORMAT = "%Y/%m/%d %H:%M:%S"
@@ -24,7 +25,6 @@ async def spreadsheets_create(wrapper_services: Aiogoogle) -> str:
     spreadsheetid = response['spreadsheetId']
     print(f'https://docs.google.com/spreadsheets/d/{spreadsheetid}')
     return spreadsheetid
-
 
 
 async def set_user_permissions(
@@ -57,7 +57,9 @@ async def spreadsheets_update_value(
         ['Название проекта', 'Время сбора', 'Описание']
     ]
     for project in projects:
-        new_row = [str(project['name']), str(project['time_diff']), str(project['description'])]
+        new_row = [str(project['name']),
+                   str(project['close_date'] - project['create_date']),
+                   str(project['description'])]
         table_values.append(new_row)
 
     update_body = {
@@ -72,4 +74,3 @@ async def spreadsheets_update_value(
             json=update_body
         )
     )
-
